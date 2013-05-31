@@ -111,6 +111,13 @@ Puppet::Type.newtype(:vcsrepo) do
       end
     end
   end
+  
+  newparam :trust_cert do
+    desc "Trust the server cert during"
+    newvalues(:true, :false)
+    defaultto false
+  end
+  
 
   newparam :source do
     desc "The source URI for the repository"

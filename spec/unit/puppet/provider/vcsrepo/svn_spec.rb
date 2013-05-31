@@ -21,6 +21,45 @@ describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
           provider.create
         end
       end
+      
+      resource_with :basic_auth_username do 
+        it "should execute 'svn checkout' without http info" do
+          provider.expects(:svn).with('--non-interactive', 'checkout',
+                                      resource.value(:source),
+                                      resource.value(:path))
+          provider.create
+        end
+      end
+      
+      resource_with :basic_auth_username, :basic_auth_password do 
+        it "should execute 'svn checkout' without http info" do
+          provider.expects(:svn).with('--non-interactive', 
+                                      '--username', resource.value(:basic_auth_username),
+                                      '--password', resource.value(:basic_auth_password),
+                                      '--no-auth-cache',
+                                      'checkout',
+                                      resource.value(:source),
+                                      resource.value(:path))
+          provider.create
+        end
+      end
+
+      resource_with :trust_cert => true do 
+        it "should execute 'svn checkout' and trust the cert" do
+          provider.expects(:svn).with('--non-interactive', '--trust-server-cert', 'checkout',
+                                      resource.value(:source),
+                                      resource.value(:path))
+          provider.create
+        end
+      end
+      resource_with :trust_cert => false do 
+        it "should execute 'svn checkout' and trust the cert" do
+          provider.expects(:svn).with('--non-interactive', 'checkout',
+                                      resource.value(:source),
+                                      resource.value(:path))
+          provider.create
+        end
+      end
     end
     resource_without :source do
       resource_with :fstype do

@@ -7,6 +7,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
            :svnadmin => 'svnadmin'
 
   has_features :filesystem_types, :reference_tracking, :basic_auth
+  
 
   def create
     if !@resource.value(:source)
@@ -43,11 +44,18 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
 
   def buildargs
     args = ['--non-interactive']
+    
+    if (@resource.value(:trust_cert) == :true)
+      args.push('--trust-server-cert')
+    end
+    
     if @resource.value(:basic_auth_username) && @resource.value(:basic_auth_password)
       args.push('--username', @resource.value(:basic_auth_username))
       args.push('--password', @resource.value(:basic_auth_password))
       args.push('--no-auth-cache')
     end
+    
+    
     return args
   end
 
